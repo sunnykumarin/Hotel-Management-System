@@ -11,7 +11,7 @@ const clerkWebhooks = async (req, res) => {
         const headers = {
             "svix-id": req.headers["svix-id"],
             "svix-timestamp": req.headers["svix-timestamp"],
-            "svix-Signature": req.headers["svix-Signature"]
+            "svix-signature": req.headers["svix-signature"],
         };
 
         //Verifying Headers
@@ -48,9 +48,9 @@ const clerkWebhooks = async (req, res) => {
             default:
                 break;
         }
-        res.json({ success: true, Message: "Webhook Recieved" })
+        res.json({ success: true, message: "Webhook Recieved" })
     } catch (error) {
-        console.log(error.Message)
+        console.log(error.message)
         res.json({ success: false, message: error.message })
     }
 }

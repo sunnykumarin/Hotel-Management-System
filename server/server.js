@@ -16,7 +16,11 @@ app.use(cors())
 app.use(clerkMiddleware())
 
 //api for listen clerk webhooks
-app.use("/api/clerk", clerkWebhooks)
+app.post(
+  "/api/clerk",
+  express.raw({ type: "application/json" }),
+  clerkWebhooks
+);
 
 app.get('/', (req, res) => {
     res.send("Roomora")
