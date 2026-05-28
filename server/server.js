@@ -6,7 +6,7 @@ import { clerkMiddleware } from '@clerk/express'
 import clerkWebhooks from "./controllers/clerkWebhooks.js"
 
 dotenv.config()
-connectDB()
+connectDB();
 
 const app = express()
 
