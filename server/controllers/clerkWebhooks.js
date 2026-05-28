@@ -20,7 +20,7 @@ const clerkWebhooks = async (req, res) => {
 
         //Getting Data from request body
         const { data, type } = evt;
-        
+
         const userData = {
             _id: data.id,
             email: data.email_addresses[0].email_address,
@@ -32,7 +32,11 @@ const clerkWebhooks = async (req, res) => {
         switch (type) {
 
             case "user.created": {
-                await User.create(userData)
+                await User.findByIdAndUpdate(
+                    data.id,
+                    userData,
+                    { upsert: true, new: true }
+                )
                 break;
             }
 
@@ -50,6 +54,7 @@ const clerkWebhooks = async (req, res) => {
                 break;
         }
         res.json({ success: true, message: "Webhook Recieved" })
+
     } catch (error) {
         console.log(error.message)
         res.json({ success: false, message: error.message })
