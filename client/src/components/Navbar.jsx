@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { assets } from "../assets/assets";
-import { useClerk, useUser, UserButton } from "@clerk/react";
+import { useClerk, UserButton } from "@clerk/react";
+import { useAppContext } from "../context/AppContext";
 
 const BookIcon = () => (
     <svg className="w-4 h-4 text-gray-700" fill="none" viewBox="0 0 24 24">
@@ -21,9 +22,9 @@ const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const { openSignIn } = useClerk();
-    const { user } = useUser();
-    const navigate = useNavigate();
     const location = useLocation();
+
+    const { user, navigate, isOwner, setShowHotelReg } = useAppContext();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -41,55 +42,57 @@ const Navbar = () => {
 
             {/* Logo */}
             <Link to="/">
-                <img 
-                    src={assets.logo} 
-                    alt="Roomora" 
-                    className={`h-9 ${isScrolled ? "invert opacity-80" : ""}`} 
+                <img
+                    src={assets.logo}
+                    alt="Roomora"
+                    className={`h-9 ${isScrolled ? "invert opacity-80" : ""}`}
                 />
             </Link>
 
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center gap-4 lg:gap-8">
                 {navLinks.map((link, i) => (
-                    <Link 
-                        key={i} 
-                        to={link.path} 
+                    <Link
+                        key={i}
+                        to={link.path}
                         className={`group flex flex-col gap-0.5 ${isScrolled ? "text-gray-700" : "text-white"}`}
                     >
                         {link.name}
                         <div className={`${isScrolled ? "bg-gray-700" : "bg-white"} h-0.5 w-0 group-hover:w-full transition-all duration-300`} />
                     </Link>
                 ))}
-
-                <button 
-                    className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${isScrolled ? 'text-black' : 'text-white'}`} 
-                    onClick={() => navigate('/owner')}
-                >
-                    Dashboard
-                </button>
+                {user && (
+                    <button
+                        className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${isScrolled ? 'text-black' : 'text-white'}`}
+                        onClick={() => isOwner ? navigate('/owner') : setShowHotelReg(true)}
+                    >
+                        {isOwner ? 'Dashboard' : 'List Your Hotel'}
+                    </button>
+                )
+                }
             </div>
 
             {/* Right */}
             <div className="hidden md:flex items-center gap-4">
-                <img 
-                    src={assets.searchIcon} 
-                    alt="search" 
-                    className={`${isScrolled ? 'invert' : ''} h-7`} 
+                <img
+                    src={assets.searchIcon}
+                    alt="search"
+                    className={`${isScrolled ? 'invert' : ''} h-7`}
                 />
 
                 {user ? (
                     <UserButton>
                         <UserButton.MenuItems>
-                            <UserButton.Action 
-                                label="My Bookings" 
-                                labelIcon={<BookIcon />} 
-                                onClick={() => navigate('/my-bookings')} 
+                            <UserButton.Action
+                                label="My Bookings"
+                                labelIcon={<BookIcon />}
+                                onClick={() => navigate('/my-bookings')}
                             />
                         </UserButton.MenuItems>
                     </UserButton>
                 ) : (
-                    <button 
-                        onClick={openSignIn} 
+                    <button
+                        onClick={openSignIn}
                         className={`px-8 py-2.5 rounded-full ml-4 ${isScrolled ? "text-white bg-black" : "bg-white text-black"}`}
                     >
                         Login
@@ -100,11 +103,11 @@ const Navbar = () => {
             {/* Mobile */}
             <div className="flex items-center gap-3 md:hidden">
                 {user && <UserButton />}
-                <img 
-                    onClick={() => setIsMenuOpen(!isMenuOpen)} 
-                    src={assets.menuIcon} 
-                    alt="" 
-                    className={`${isScrolled ? 'invert' : ''} h-4`} 
+                <img
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    src={assets.menuIcon}
+                    alt=""
+                    className={`${isScrolled ? 'invert' : ''} h-4`}
                 />
             </div>
 
@@ -119,6 +122,12 @@ const Navbar = () => {
                         {link.name}
                     </Link>
                 ))}
+
+                {user && <button className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all" onClick={() => isOwner ? navigate('/owner') : setShowHotelReg(true)}>
+                    {isOwner ? 'Dashboard' : 'List Your Hotel'}
+
+                </button>
+                }
 
                 {!user && (
                     <button onClick={openSignIn} className="bg-black text-white px-8 py-2.5 rounded-full">
