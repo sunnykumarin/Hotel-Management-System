@@ -15,29 +15,30 @@ dotenv.config();
 connectDB();
 connectCloudinary();
 
-const app = express()
+const app = express();
 
-//middlewares
-app.use(express.json())
-app.use(cors())
-app.use(clerkMiddleware())
+app.use(cors());
 
-//api for listen clerk webhooks
+// Clerk webhook FIRST
 app.use(
-    "/api/clerk",
-    express.raw({ type: "application/json" }),
-    clerkWebhooks
+  "/api/clerk",
+  express.raw({ type: "application/json" }),
+  clerkWebhooks
 );
 
-app.get('/', (req, res) => {
-    res.send("Roomora")
-})
+// Then JSON parser
+app.use(express.json());
 
-app.use('/api/user', userRouter)
-app.use('/api/hotels', hotelRouter)
-app.use('/api/rooms', roomRouter)
-app.use('/api/bookings', bookingRouter)
+app.use(clerkMiddleware());
 
+app.get("/", (req, res) => {
+  res.send("Roomora");
+});
+
+app.use("/api/user", userRouter);
+app.use("/api/hotels", hotelRouter);
+app.use("/api/rooms", roomRouter);
+app.use("/api/bookings", bookingRouter);
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
