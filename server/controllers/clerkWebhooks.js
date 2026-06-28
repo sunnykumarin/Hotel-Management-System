@@ -1,5 +1,5 @@
 import { Message } from "svix/dist/api/message.js";
-import User from "../models/user.js";
+import User from "../models/User.js";
 import { Webhook } from "svix";
 
 const clerkWebhooks = async (req, res) => {
