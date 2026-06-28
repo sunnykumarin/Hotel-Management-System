@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { assets, roomCommonData } from '../assets/assets'
+import { assets, roomCommonData, facilityIcons } from '../assets/assets'
 import StarRating from '../components/StarRating'
 import { useAppContext } from '../context/AppContext'
 import toast from 'react-hot-toast'
@@ -24,7 +24,14 @@ const RoomDetails = () => {
                 toast.error('Check-In Date should be less than Check-In date')
                 return;
             }
-            const { data } = await axios.post('/api/bookings/check-availablity', { room: id, checkInDate, checkOutDate })
+            const { data } = await axios.post(
+                "/api/bookings/check-availability",
+                {
+                    room: id,
+                    checkInDate,
+                    checkOutDate,
+                }
+            );
             if (data.success) {
                 if (data.isAvailable) {
                     setIsAvailable(true)
