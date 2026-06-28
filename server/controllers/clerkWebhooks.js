@@ -1,4 +1,3 @@
-import { Message } from "svix/dist/api/message.js";
 import User from "../models/User.js";
 import { Webhook } from "svix";
 
