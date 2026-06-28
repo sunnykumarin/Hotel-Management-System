@@ -38,8 +38,12 @@ app.use('/api/hotels', hotelRouter)
 app.use('/api/rooms', roomRouter)
 app.use('/api/bookings', bookingRouter)
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-    console.log(`server is started at port ${PORT}`)
-})
+if (process.env.NODE_ENV !== "production") {
+    app.listen(PORT, () => {
+        console.log(`server is started at port ${PORT}`);
+    });
+}
+
+export default app;
