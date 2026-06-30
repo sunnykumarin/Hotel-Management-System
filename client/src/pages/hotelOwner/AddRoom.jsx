@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
-import Title from '../../components/Title'
-import { assets } from '../../assets/assets'
-import { useAppContext } from '../../context/AppContext'
+import React, { useState } from "react";
+import toast from "react-hot-toast";
+
+import Title from "../../components/Title";
+import { assets } from "../../assets/assets";
+import { useAppContext } from "../../context/AppContext";
 
 const AddRoom = () => {
-
   const { axios, getToken } = useAppContext();
 
   const [images, setImages] = useState({
@@ -12,117 +13,247 @@ const AddRoom = () => {
     2: null,
     3: null,
     4: null,
-  })
+  });
 
   const [inputs, setInputs] = useState({
-    roomType: ' ',
-    pricePerNight: ' ',
+    roomType: "",
+    pricePerNight: "",
     amenities: {
-      'Free WiFi': false,
-      'Free Breakfast': false,
-      'Room Services': false,
-      'Mountain View': false,
-      'Pool Access': false,
-    }
-  })
+      "Free WiFi": false,
+      "Free Breakfast": false,
+      "Room Service": false,
+      "Mountain View": false,
+      "Pool Access": false,
+    },
+  });
 
   const [loading, setLoading] = useState(false);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    //check if all inputs are filled
-    if (!inputs.roomType || !inputs.pricePerNight || !inputs.amenities || !Object.values(image).some(image => image)) {
-      toast.error("Please fill in all the details")
+
+    if (
+      !inputs.roomType ||
+      !inputs.pricePerNight ||
+      !Object.values(images).some((image) => image)
+    ) {
+      toast.error("Please fill in all the details.");
       return;
     }
+
     setLoading(true);
+
     try {
-      const formData = new FormData()
-      formData.append('roomType', inputs.roomType)
-      formData.append('pricePerNight', inputs.pricePerNight)
-      //Converting Amenities to Array & keeping only enabled Amenities
-      const amenities = Object.keys(input.amenities).filter(key => inputs.amenities[key])
+      const formData = new FormData();
 
-      formData.append('amenities', JSON.stringify(amenities))
+      formData.append("roomType", inputs.roomType);
+      formData.append("pricePerNight", inputs.pricePerNight);
 
-      //Adding Images to FormData
-      Object.keys(images).fprEach((key) => {
-        images[key] && formData.append('images', images[key])
-      })
-      const { data } = await axios.post(`/api/rooms`, formData, { headers: { Authorization: `Bearer ${await getToken()}` } })
+      const amenities = Object.keys(inputs.amenities).filter(
+        (key) => inputs.amenities[key]
+      );
+
+      formData.append("amenities", JSON.stringify(amenities));
+
+      Object.keys(images).forEach((key) => {
+        if (images[key]) {
+          formData.append("images", images[key]);
+        }
+      });
+
+      const token = await getToken();
+
+      const { data } = await axios.post("/api/rooms", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (data.success) {
-        toast.success(data.message)
+        toast.success(data.message);
+
         setInputs({
-          roomType: '',
-          pricePerNight: 0,
+          roomType: "",
+          pricePerNight: "",
           amenities: {
-            'Free WiFi': false,
-            'Free Breakfast': false,
-            'Room Services': false,
-            'Mountain View': false,
-            'Pool Access': false,
-          }
-        })
-        setImages({ 1: null, 2: null, 3: null, 4: null })
+            "Free WiFi": false,
+            "Free Breakfast": false,
+            "Room Service": false,
+            "Mountain View": false,
+            "Pool Access": false,
+          },
+        });
+
+        setImages({
+          1: null,
+          2: null,
+          3: null,
+          4: null,
+        });
       } else {
-        toast.error(data.message)
+        toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message)
+      toast.error(
+        error.response?.data?.message || error.message
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={onSubmitHandler}>
-      <Title align='left' font='outfit' title='Add Room' subTitle='Fill in the details carefully and accurate room details, pricing, and amenities, to enhance the user booking experience.' />
+      <Title
+        align="left"
+        font="outfit"
+        title="Add Room"
+        subTitle="Fill in the details carefully to improve the booking experience."
+      />
 
-      {/* Upload Area For Images */}
-      <p className='text-gray-800 mt-10'>Images</p>
-      <div className='grid grid-cols-2 sm:flex gap-4 my-2 flex-wrap'>
+      {/* Images */}
+
+      <p className="text-gray-800 mt-10">Images</p>
+
+      <div className="grid grid-cols-2 sm:flex gap-4 flex-wrap my-2">
         {Object.keys(images).map((key) => (
-          <label htmlFor={`roomImage${key}`} key={key}>
-            <img className='max-h-13 cursor-pointer opacity-80'
-              src={images[key] ? URL.createObjectURL(images[key]) : assets.uploadArea} alt="" />
-            <input type="file" accept='image/*' id={`roomImage${key}`} hidden onChange={e => setImages({ ...images, [key]: e.target.files[0] })} />
+          <label key={key} htmlFor={`roomImage${key}`}>
+            <img
+              src={
+                images[key]
+                  ? URL.createObjectURL(images[key])
+                  : assets.uploadArea
+              }
+              alt="Upload"
+              className="w-20 h-20 object-cover rounded cursor-pointer border"
+            />
+
+            <input
+              hidden
+              id={`roomImage${key}`}
+              type="file"
+              accept="image/*"
+              onChange={(e) =>
+                setImages({
+                  ...images,
+                  [key]: e.target.files[0],
+                })
+              }
+            />
           </label>
         ))}
       </div>
 
-      <div className='w-full flex max-sm:flex-col sm:gap mt-4'>
-        <div className='flex-1 max-w-48'>
-          <p className='text-gray-800 mt-4'>Room Type</p>
-          <select value={inputs.roomType} onChange={e => setInputs({ ...inputs, eoomType: e.target.value })}
-            className='border opacity-70 border-gray-300 mt-1 rounded p-2 w-full'>
-            <option value="">Select Room Type</option>
-            <option value="Single Bed">Single Bed</option>
-            <option value="Double Bed">Double Bed</option>
-            <option value="Luxuary Room">Luxuary Room</option>
-            <option value="Family Suite">Family Suite</option>
+      {/* Room Type + Price */}
+
+      <div className="flex flex-col sm:flex-row gap-6 mt-6">
+
+        <div className="max-w-xs flex-1">
+          <p className="text-gray-800 mb-2">
+            Room Type
+          </p>
+
+          <select
+            value={inputs.roomType}
+            onChange={(e) =>
+              setInputs({
+                ...inputs,
+                roomType: e.target.value,
+              })
+            }
+            className="border border-gray-300 rounded p-2 w-full"
+          >
+            <option value="">
+              Select Room Type
+            </option>
+
+            <option value="Single Bed">
+              Single Bed
+            </option>
+
+            <option value="Double Bed">
+              Double Bed
+            </option>
+
+            <option value="Luxury Room">
+              Luxury Room
+            </option>
+
+            <option value="Family Suite">
+              Family Suite
+            </option>
           </select>
         </div>
-        <div className='ml-4'>
-          <p className='mt-4 text-gray-800'>
-            Price <span className='text-xs'>/night</span>
+
+        <div>
+          <p className="text-gray-800 mb-2">
+            Price / Night
           </p>
-          <input type="number" placeholder='0' className='border border-gray-300 mt-1 rounded p-2 w-24' value={inputs.pricePerNight} onChange={e => setInputs({ ...inputs, pricePerNight: e.target.value })} />
+
+          <input
+            type="number"
+            placeholder="0"
+            value={inputs.pricePerNight}
+            onChange={(e) =>
+              setInputs({
+                ...inputs,
+                pricePerNight: e.target.value,
+              })
+            }
+            className="border border-gray-300 rounded p-2 w-32"
+          />
         </div>
+
       </div>
 
-      <p className='text-gray-800 mt-4'>Amenities</p>
-      <div className='flex flex-col flex-wrap mt-1 text-gray-400 max-w-sm'>
-        {Object.keys(inputs.amenities).map((amenity, index) => (
-          <div key={index}>
-            <input type="checkbox" id={`amenities${index + 1}`} checked={inputs.amenities[amenity]} onChange={() => setInputs({ ...inputs, amenities: { ...inputs.amenities, [amenity]: !inputs.amenities[amenity] } })} />
-            <label htmlFor={`amenities${index + 1}`}>{amenity}</label>
-          </div>
-        ))}
+      {/* Amenities */}
+
+      <p className="text-gray-800 mt-8 mb-2">
+        Amenities
+      </p>
+
+      <div className="grid grid-cols-2 gap-3 max-w-lg">
+        {Object.keys(inputs.amenities).map(
+          (amenity, index) => (
+            <label
+              key={index}
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={
+                  inputs.amenities[amenity]
+                }
+                onChange={() =>
+                  setInputs({
+                    ...inputs,
+                    amenities: {
+                      ...inputs.amenities,
+                      [amenity]:
+                        !inputs.amenities[
+                          amenity
+                        ],
+                    },
+                  })
+                }
+              />
+
+              <span>{amenity}</span>
+            </label>
+          )
+        )}
       </div>
-      <button className='bg-primary text-white px-8 py-2 rounded mt-8 cursor-pointer' disabled={loading}>{loading ? 'Adding...' : 'Add Room'}</button>
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="mt-8 bg-primary text-white px-8 py-2 rounded hover:opacity-90 disabled:opacity-50"
+      >
+        {loading ? "Adding..." : "Add Room"}
+      </button>
     </form>
-  )
-}
+  );
+};
 
-export default AddRoom
+export default AddRoom;

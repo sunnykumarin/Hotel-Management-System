@@ -1,34 +1,74 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { assets } from '../assets/assets'
+import React from "react";
+import { Link } from "react-router-dom";
+
+import { assets } from "../assets/assets";
+import { useAppContext } from "../context/AppContext";
 
 const HotelCard = ({ room, index }) => {
-    return (
-        <Link to={'/rooms/' + room._id} onClick={() => scrollTo(0, 0)} key={room._id}
-            className='relative max-w-70 w-full rounded-xl overflow-hidden bg-white text-gray-500/90 shadow-[0px_4px_4px_rgba(0,0,0,0.5)]'>
-            <img src={room.images[0]} alt='' />
+  const { currency } = useAppContext();
 
-            {index % 2 === 0 && <p className='px-3 py-1 absolute top-3 left-3 text-xs bg-white text-gray-800 font-medium rounded-full'>Best Seller</p>}
+  return (
+    <Link
+      to={`/rooms/${room._id}`}
+      onClick={() =>
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        })
+      }
+      className="relative max-w-70 w-full overflow-hidden rounded-xl bg-white shadow-md hover:shadow-xl transition duration-300"
+    >
+      <img
+        src={room.images[0]}
+        alt={`${room.hotel.name} Room`}
+        className="w-full h-52 object-cover"
+      />
 
-            <div className='p-4 pt-5'>
-                <div className='flex items-center justify-between'>
-                    <p className='font-playfair tex-xl font-medium text-gray-800'>{room.hotel.name}</p>
-                    <div className='flex items-center gap-1'>
-                        <img src={assets.starIconFilled} alt='star-icon' /> 4.5
-                    </div>
-                </div>
-                <div className='flex items-center gap-1 text-sm'>
-                    <img src={assets.locationFilledIcon} alt='location-icon' />
-                    <span>{room.hotel.address}</span>
-                </div>
-                <div className='flex items-center justify-between mt-4'>
-                    <p><span className='text-xl text-gray-800'>${room.pricePerNight}</span>/night</p>
-                    <button className='px-4 py-2 text-sm font-medium border border-gray-300 rounded hover:bg-gray-300 transition-all cursor-pointer'>Book now</button>
-                </div>
+      {index % 2 === 0 && (
+        <span className="absolute top-3 left-3 rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-800">
+          Best Seller
+        </span>
+      )}
 
-            </div>
-        </Link >
-    )
-}
+      <div className="p-4">
+        <div className="flex items-center justify-between">
+          <h2 className="font-playfair text-xl font-semibold text-gray-800">
+            {room.hotel.name}
+          </h2>
 
-export default HotelCard
+          <div className="flex items-center gap-1">
+            <img
+              src={assets.starIconFilled}
+              alt="Rating"
+            />
+            <span>{room.rating || "4.5"}</span>
+          </div>
+        </div>
+
+        <div className="mt-2 flex items-center gap-2 text-sm text-gray-500">
+          <img
+            src={assets.locationFilledIcon}
+            alt="Location"
+          />
+          <span>{room.hotel.address}</span>
+        </div>
+
+        <div className="mt-5 flex items-center justify-between">
+          <p className="text-gray-700">
+            <span className="text-2xl font-semibold">
+              {currency}
+              {room.pricePerNight}
+            </span>
+            /night
+          </p>
+
+          <span className="rounded border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100 transition">
+            Book Now
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+};
+
+export default React.memo(HotelCard);

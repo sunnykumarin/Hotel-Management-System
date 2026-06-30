@@ -155,8 +155,9 @@ export const getUserBookings = async (req, res) => {
 // API to get hotel owner's bookings
 export const getHotelBookings = async (req, res) => {
     try {
+        // Find hotel of logged-in owner
         const hotel = await Hotel.findOne({
-            owner: req.auth.userId,
+            owner: req.user._id,
         });
 
         if (!hotel) {
@@ -166,16 +167,18 @@ export const getHotelBookings = async (req, res) => {
             });
         }
 
+        // Fetch all bookings of this hotel
         const bookings = await Booking.find({
             hotel: hotel._id,
         })
-            .populate("room hotel user")
+            .populate("user room hotel")
             .sort({ createdAt: -1 });
 
+        // Calculate dashboard statistics
         const totalBookings = bookings.length;
 
         const totalRevenue = bookings.reduce(
-            (acc, booking) => acc + booking.totalPrice,
+            (sum, booking) => sum + booking.totalPrice,
             0
         );
 
@@ -190,7 +193,7 @@ export const getHotelBookings = async (req, res) => {
     } catch (error) {
         console.log(error);
 
-        res.json({
+        res.status(500).json({
             success: false,
             message: error.message,
         });

@@ -1,53 +1,52 @@
-import React from 'react'
-import Title from './Title'
-import { testimonials } from '../assets/assets'
-import StarRating from './StarRating'
+import Title from "./Title";
+import StarRating from "./StarRating";
+import { testimonials } from "../assets/assets";
 
 const Testimonial = () => {
-    return (
-        <div className='flex flex-col items-center px-6 md:px-16 lg:px-24 bg-slate-50 pt-20 pb-30'>
-            
-            <Title 
-                title='What Our Guests Say' 
-                subTitle='Discover why discerning travelers consistently choose Roomora for their exclusive and luxurious accommodations around the world.' 
-            />
+  return (
+    <section className="bg-slate-50 px-6 pt-20 pb-30 md:px-16 lg:px-24">
+      <Title
+        title="What Our Guests Say"
+        subTitle="Discover why discerning travelers consistently choose Roomora for their exclusive and luxurious accommodations around the world."
+      />
 
-            <div className="flex flex-wrap items-center gap-6 mt-20">
-                {testimonials.map((testimonial) => (
-                    
-                    <div 
-                        key={testimonial.id} 
-                        className='bg-white p-6 rounded-xl shadow max-w-sm'
-                    >
-                        {/* User Info */}
-                        <div className='flex items-center gap-3'>
-                            <img 
-                                className='w-12 h-12 rounded-full' 
-                                src={testimonial.image} 
-                                alt={testimonial.name} 
-                            />
-                            <div>
-                                <p className='font-playfair text-xl'>{testimonial.name}</p>
-                                <p className='text-gray-500 text-sm'>{testimonial.address}</p>
-                            </div>
-                        </div>
+      <div className="mt-20 flex flex-wrap justify-center gap-6">
+        {testimonials.map((testimonial) => (
+          <article
+            key={testimonial.id}
+            className="max-w-sm rounded-xl bg-white p-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+          >
+            <div className="flex items-center gap-3">
+              <img
+                src={testimonial.image}
+                alt={testimonial.name}
+                loading="lazy"
+                className="h-14 w-14 rounded-full object-cover"
+              />
 
-                        {/* Rating */}
-                        <div className='flex items-center gap-1 mt-4'>
-                            <StarRating rating={testimonial.rating} />
-                        </div>
+              <div>
+                <h3 className="font-playfair text-xl">
+                  {testimonial.name}
+                </h3>
 
-                        {/* Review */}
-                        <p className='text-gray-500 mt-4'>
-                            {testimonial.review}
-                        </p>
-                    </div>
-
-                ))}
+                <p className="text-sm text-gray-500">
+                  {testimonial.address}
+                </p>
+              </div>
             </div>
 
-        </div>
-    )
-}
+            <div className="mt-4">
+              <StarRating rating={testimonial.rating} />
+            </div>
 
-export default Testimonial
+            <p className="mt-4 text-gray-500 leading-7">
+              {testimonial.review}
+            </p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+export default Testimonial;
