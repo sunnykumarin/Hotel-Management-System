@@ -2,6 +2,7 @@ import transporter from "../config/nodemailer.js";
 import Booking from "../models/Booking.js";
 import Hotel from "../models/Hotel.js";
 import Room from "../models/Room.js";
+import Stripe from "stripe";
 
 // Function to check room availability
 const checkAvailability = async ({ checkInDate, checkOutDate, room }) => {
@@ -199,3 +200,59 @@ export const getHotelBookings = async (req, res) => {
         });
     }
 };
+
+//Stripe payment api
+export const stripePayment = async (req, res) => {
+    try {
+        const { bookingId } = req.body;
+
+        const booking = await Booking.findById(bookingId);
+        const roomData = await Room.findById(booking.room).populate('hotel');
+        const { origin } = req.headers;
+
+        const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY)
+
+        const line_items = [
+            {
+                price_data: {
+                    currency: "usd",
+                    product_data: {
+                        name: roomData.hotel.name,
+                    },
+                    unit_amount: booking.totalPrice * 100
+                },
+                quantity: 1,
+            }
+        ]
+
+        console.log("Booking ID:", bookingId);
+
+        //create checkout session
+        const session = await stripeInstance.checkout.sessions.create({
+            payment_method_types: ["card"],
+            line_items,
+            mode: "payment",
+
+            success_url: `${origin}/my-bookings?success=true`,
+            cancel_url: `${origin}/my-bookings?cancel=true`,
+
+            client_reference_id: bookingId,
+
+            metadata: {
+                bookingId,
+            },
+        });
+
+        console.log("Session Metadata:", session.metadata);
+        console.log("Session ID:", session.id);
+
+        res.json({ success: true, url: session.url });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+}
