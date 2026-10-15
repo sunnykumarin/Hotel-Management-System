@@ -1,129 +1,113 @@
-# 🏨 Hotel Management System
 
-A full-stack Hotel Management System built using the MERN Stack (MongoDB, Express.js, React.js, Node.js). The application enables users to search hotels, explore room listings, view hotel details, and manage bookings through a modern and responsive interface. The project also includes secure authentication using Clerk and cloud-based image storage with Cloudinary.
+# Hotel Management System
 
----
+A full-stack hotel booking application built using React, Node.js, Express.js, and MongoDB. Users can explore hotels, check room availability, book rooms, and manage their reservations.
 
-## 🚀 Features
+**GitHub Repository:** https://github.com/sunnykumarin/Hotel-Management-System
 
-### User Features
+## Features
 
-* Secure Authentication with Clerk
-* Google Sign-In Support
-* Browse Hotels and Rooms
-* Search Hotels by Destination
-* Filter Rooms by Type and Price
-* View Detailed Hotel and Room Information
-* Responsive User Interface
-* Recent Search Tracking
+- Browse hotels and available rooms.
+- View room details and pricing.
+- Check room availability for selected dates.
+- Book rooms with check-in and check-out dates.
+- Calculate the total booking price based on the number of nights.
+- Manage hotel bookings.
+- User authentication using Clerk.
+- Payment integration using Stripe.
+- Pay-at-hotel booking option.
+- Booking confirmation emails using Nodemailer and Brevo SMTP.
+- Image management using Cloudinary.
+- Store application data in MongoDB.
 
-### Hotel Owner Features
-
-* Hotel Registration Request
-* Hotel Management Dashboard
-* Room Listing Management
-* Property Information Management
-
-### System Features
-
-* RESTful API Architecture
-* JWT-Based Authorization
-* MongoDB Database Integration
-* Cloudinary Image Upload and Storage
-* Responsive Design for Mobile and Desktop
-* Scalable Backend Structure
-
----
-
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
-
-* React.js
-* Vite
-* Tailwind CSS
-* React Router DOM
-* Axios
-* React Hot Toast
+- React.js
+- Vite
+- Tailwind CSS
+- JavaScript
 
 ### Backend
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
 
-* Node.js
-* Express.js
-* MongoDB Atlas
-* Mongoose
-* Clerk Authentication
-* Cloudinary
-* Svix Webhooks
+### Authentication and Integrations
+- Clerk – User authentication
+- Stripe – Payment processing
+- Nodemailer – Email notifications
+- Brevo – SMTP email delivery
+- Cloudinary – Image management
 
-### Deployment
+## Project Structure
 
-* Frontend: Render / Vercel
-* Backend: Render
-* Database: MongoDB Atlas
-
----
-
-## 📁 Project Structure
-
-```bash
-Hotel-Management-System
-│
-├── client
-│   ├── src
-│   │   ├── assets
-│   │   ├── components
-│   │   ├── context
-│   │   ├── pages
-│   │   ├── layouts
-│   │   └── App.jsx
-│   │
-│   ├── public
+```text
+Hotel-Management-System/
+├── client/
+│   ├── src/
+│   ├── public/
 │   └── package.json
-│
-├── server
-│   ├── config
-│   ├── controllers
-│   ├── middlewares
-│   ├── models
-│   ├── routes
+├── server/
+│   ├── configs/
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
 │   ├── server.js
 │   └── package.json
-│
-├── README.md
-└── .gitignore
+└── README.md
 ```
 
----
+## Getting Started
 
-## ⚙️ Installation & Setup
+### Prerequisites
 
-### 1. Clone Repository
+Make sure you have installed:
+
+- Node.js
+- npm
+- MongoDB or a MongoDB Atlas account
+
+You may also need accounts and credentials for Clerk, Stripe, Cloudinary, and Brevo, depending on the features you want to run.
+
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/hotel-management-system.git
-cd hotel-management-system
+git clone https://github.com/sunnykumarin/Hotel-Management-System.git
+cd Hotel-Management-System
 ```
 
----
-
-### 2. Backend Setup
+### 2. Set Up the Backend
 
 ```bash
 cd server
 npm install
+```
+
+Create a `.env` file inside the `server` directory and add the environment variables required by your application.
+
+Example email configuration:
+
+```env
+SMTP_USER=your-brevo-smtp-login
+SMTP_PASS=your-brevo-smtp-key
+SENDER_EMAIL=your-verified-sender@example.com
+```
+
+Configure your MongoDB, Clerk, Stripe, and Cloudinary variables using the exact names expected by your backend code.
+
+Start the backend using the script defined in `server/package.json`. For example:
+
+```bash
 npm run dev
 ```
 
-Backend runs on:
+If your project does not have a `dev` script, use the appropriate script defined in your `package.json`.
 
-```bash
-http://localhost:8000
-```
+### 3. Set Up the Frontend
 
----
-
-### 3. Frontend Setup
+Open another terminal:
 
 ```bash
 cd client
@@ -131,175 +115,77 @@ npm install
 npm run dev
 ```
 
-Frontend runs on:
+Configure any frontend environment variables required by your application, including the Clerk publishable key and backend API URL.
 
-```bash
-http://localhost:5173
-```
+The frontend and backend must be configured to communicate with each other.
 
----
+## Booking Workflow
 
-## 🔑 Environment Variables
+1. The user selects a room.
+2. The user chooses check-in and check-out dates and enters the number of guests.
+3. The backend checks room availability.
+4. The application calculates the total price using the room's nightly rate and booking duration.
+5. The booking is stored in MongoDB.
+6. The application attempts to send a booking confirmation email.
+7. The user can use the supported payment option, including Pay At Hotel or the Stripe payment flow.
 
-### Backend (.env)
+## Payment Integration
 
-```env
-MONGODB_URI=
-CLERK_WEBHOOK_SECRET=
+The project includes Stripe-related payment functionality.
 
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
+For safe payment processing:
 
-JWT_SECRET=
-```
+- Keep Stripe secret keys on the backend.
+- Verify payment status on the server.
+- Associate each payment with the correct booking.
+- Validate payment webhook signatures when webhooks are used.
+- Test transactions using Stripe test mode before enabling live payments.
 
-### Frontend (.env)
+## Email Notifications
 
-```env
-VITE_BACKEND_URL=http://localhost:8000
+The application uses Nodemailer with Brevo SMTP to send booking confirmation emails.
 
-VITE_CLERK_PUBLISHABLE_KEY=
+Required environment variables:
 
-VITE_CURRENCY=$
-```
+| Variable | Description |
+|---|---|
+| `SMTP_USER` | Brevo SMTP login |
+| `SMTP_PASS` | Brevo SMTP key |
+| `SENDER_EMAIL` | Verified sender email address |
 
----
+If emails are not being delivered:
 
-## 🔐 Authentication
+1. Verify the SMTP login and key in Brevo.
+2. Ensure the sender email is verified.
+3. Confirm that the backend loads the correct `.env` file.
+4. Check the backend logs for SMTP authentication or delivery errors.
+5. Check spam and junk folders.
 
-The application uses Clerk Authentication for:
+SMTP authentication errors such as `535 5.7.8 Authentication failed` indicate that the SMTP server rejected the credentials supplied by the application.
 
-* User Registration
-* User Login
-* Google OAuth Login
-* Session Management
-* User Profile Management
+## Security Considerations
 
-Clerk webhooks are integrated to synchronize authenticated users with MongoDB.
+- Never commit `.env` files or secret credentials.
+- Validate booking dates and guest counts on the backend.
+- Calculate booking totals on the server.
+- Verify user authorization before allowing access to bookings.
+- Verify payment status on the backend.
+- Use HTTPS and secure environment variables in production.
 
----
+## Future Improvements
 
-## ☁️ Cloudinary Integration
+- Automated tests for booking and payment workflows.
+- Improved email delivery tracking.
+- Better centralized error handling.
+- Booking history and reservation management enhancements.
+- Production deployment documentation.
 
-Cloudinary is used for:
-
-* Hotel Images
-* Room Images
-* Media Storage
-* Optimized Image Delivery
-
----
-
-## 📊 Database Schema
-
-### User
-
-* User ID
-* Username
-* Email
-* Profile Image
-* Role
-* Recent Searched Cities
-
-### Hotel
-
-* Hotel Information
-* Location Details
-* Amenities
-* Hotel Owner
-
-### Room
-
-* Room Type
-* Price Per Night
-* Amenities
-* Availability
-* Images
-
----
-
-## 📸 Screenshots
-
-Add screenshots of:
-
-* Home Page
-* Hotel Listing Page
-* Room Details Page
-* Authentication Page
-* Hotel Owner Dashboard
-
-Example:
-
-```markdown
-![Home Page](screenshots/home.png)
-![Rooms](screenshots/rooms.png)
-```
-
----
-
-## 🚀 Deployment
-
-### Frontend
-
-Deploy using:
-
-* Render
-* Vercel
-
-### Backend
-
-Deploy using:
-
-* Render
-
-### Database
-
-* MongoDB Atlas
-
----
-
-## 🔮 Future Enhancements
-
-* Online Booking System
-* Payment Gateway Integration
-* Hotel Reviews and Ratings
-* Booking History
-* Email Notifications
-* Admin Dashboard
-* Wishlist Feature
-* Advanced Search Filters
-* Real-Time Room Availability
-
----
-
-## 📚 Learning Outcomes
-
-This project helped in understanding:
-
-* Full Stack Development
-* REST API Design
-* Authentication and Authorization
-* MongoDB Data Modeling
-* React State Management
-* Cloud Deployment
-* Third-Party API Integration
-* Modern Web Development Practices
-
----
-
-## 👨‍💻 Author
+## Author
 
 **Sunny Kumar**
 
-Computer Science Engineering Student
-
-* MERN Stack Developer
-* Full Stack Web Development Enthusiast
-* Open Source Learner
+GitHub: https://github.com/sunnykumarin
 
 ---
 
-## ⭐ Support
-
-If you found this project helpful, consider giving it a ⭐ on GitHub.
+This project is intended for learning and demonstration. Review configuration, authorization, payment handling, and deployment security before using it in production.
