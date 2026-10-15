@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 
 const MyBookings = () => {
 
-    const { axios, getToken, user } = useAppContext();
+    const { axios, getToken, user, currency } = useAppContext();
     const [bookings, setBookings] = useState([])
 
     const fetchUserBookings = async () => {
@@ -52,32 +52,32 @@ const MyBookings = () => {
 
                     <div className='w-1/3'>Hotels</div>
                     <div className='w-1/3'>Date & Timings</div>
-                    <div className='w-1/3'>payment</div>
+                    <div className='w-1/3'>Payment</div>
 
                 </div>
 
                 {bookings.map((booking) => (
                     <div key={booking._id} className='grid grid-cols-1 md:grid-cols-[3fr_2fr_1fr] w-full border-b border-gray-300 py-6 first:border-t'>
                         {/* Hotel Details */}
-                        <div className='flex fex-col md:flex-row'>
-                            <img src={booking.room.images[0]} alt='hotel-img' className='min-md:w-44 rounded shadow object-cover' />
+                        <div className='flex flex-col md:flex-row'>
+                            <img src={booking.room?.images?.[0] || assets.roomImg1} alt='hotel-img' className='min-md:w-44 rounded shadow object-cover' />
                             <div className='flex flex-col gap-1.5 max-md:mt-3 min-md:ml-4'>
-                                <p className='font-playfair text-2xl'>{booking.hotel.name}
-                                    <span className='font-inter text-sm'> ({booking.room.roomType})</span>
+                                <p className='font-playfair text-2xl'>{booking.hotel?.name || "Hotel"}
+                                    <span className='font-inter text-sm'> ({booking.room?.roomType || "Standard"})</span>
                                 </p>
                                 <div className='flex items-center gap-1 text-sm text-gray-500'>
                                     <img src={assets.locationIcon} alt='location-icon' />
-                                    <span>{booking.hotel.address}</span>
+                                    <span>{booking.hotel?.address || "Address"}</span>
                                 </div>
                                 <div className='flex items-center gap-1 text-sm text-gray-500'>
                                     <img src={assets.guestsIcon} alt='guest-icon' />
                                     <span>Guests: {booking.guests}</span>
                                 </div>
-                                <p className='text-base'>Total: ${booking.totalPrice}</p>
+                                <p className='text-base'>Total: {currency}{booking.totalPrice}</p>
                             </div>
 
                         </div>
-                        {/* Date & Timeings */}
+                        {/* Date & Timings */}
                         <div className='flex flex-row md:items-center md:gap-12 mt-3 gap-8'>
                             <div>
                                 <p>Check-In:</p>
@@ -97,7 +97,7 @@ const MyBookings = () => {
 
                             </div>
                             {!booking.isPaid && (
-                                <button onClick={()=>handlePayment(booking._id)} className='px-4 py-1.5 mt-4 text-xs border border-ray-400 rounded-full hover:bg-gray-300 transition-all cursor-pointer'>
+                                <button onClick={()=>handlePayment(booking._id)} className='px-4 py-1.5 mt-4 text-xs border border-gray-400 rounded-full hover:bg-gray-300 transition-all cursor-pointer'>
                                     Pay Now
                                 </button>
                             )}

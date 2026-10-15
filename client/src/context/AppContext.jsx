@@ -73,8 +73,6 @@ export const AppProvider = ({ children }) => {
         },
       });
 
-      console.log("User API:", data);
-
       if (data.success) {
         setIsOwner(data.role === "hotelOwner");
         setSearchedCities(data.recentSearchedCities || []);

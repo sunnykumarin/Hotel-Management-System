@@ -9,8 +9,9 @@ const checkAvailability = async ({ checkInDate, checkOutDate, room }) => {
     try {
         const bookings = await Booking.find({
             room,
-            checkInDate: { $lte: checkOutDate },
-            checkOutDate: { $gte: checkInDate },
+            checkInDate: { $lt: new Date(checkOutDate) },
+            checkOutDate: { $gt: new Date(checkInDate) },
+            status: { $ne: "cancelled" },
         });
 
         return bookings.length === 0;
@@ -115,7 +116,14 @@ export const createBooking = async (req, res) => {
             `,
         };
 
-        await transporter.sendMail(mailOptions);
+        // Send confirmation email asynchronously without blocking booking response
+        transporter.sendMail(mailOptions)
+            .then((info) => {
+                console.log(`Booking confirmation email sent to ${req.user.email} (Message ID: ${info.messageId})`);
+            })
+            .catch((mailErr) => {
+                console.error(`Booking email sending failed for ${req.user.email}:`, mailErr.message);
+            });
 
         res.json({
             success: true,
@@ -225,26 +233,18 @@ export const stripePayment = async (req, res) => {
             }
         ]
 
-        console.log("Booking ID:", bookingId);
-
-        //create checkout session
+        // Create checkout session
         const session = await stripeInstance.checkout.sessions.create({
             payment_method_types: ["card"],
             line_items,
             mode: "payment",
-
             success_url: `${origin}/my-bookings?success=true`,
             cancel_url: `${origin}/my-bookings?cancel=true`,
-
             client_reference_id: bookingId,
-
             metadata: {
                 bookingId,
             },
         });
-
-        console.log("Session Metadata:", session.metadata);
-        console.log("Session ID:", session.id);
 
         res.json({ success: true, url: session.url });
 

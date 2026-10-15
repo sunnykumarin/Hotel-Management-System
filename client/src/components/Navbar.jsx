@@ -85,7 +85,7 @@ const Navbar = () => {
             <div className="hidden md:flex items-center gap-5 lg:gap-8">
                 {NAV_LINKS.map((link) => (
                     <Link
-                        key={link.path}
+                        key={link.name}
                         to={link.path}
                         className={`group flex flex-col gap-0.5 ${isScrolled ? "text-gray-700" : "text-white"
                             }`}
@@ -193,7 +193,7 @@ const Navbar = () => {
 
                 {NAV_LINKS.map((link) => (
                     <NavLink
-                        key={link.path}
+                        key={link.name}
                         to={link.path}
                         onClick={() =>
                             setIsMenuOpen(false)

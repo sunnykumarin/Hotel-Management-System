@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 import { assets, roomCommonData, facilityIcons } from "../assets/assets";
@@ -8,13 +8,14 @@ import { useAppContext } from "../context/AppContext";
 
 const RoomDetails = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
 
     const {
         rooms,
         axios,
         getToken,
-        navigate,
         currency,
+        user,
     } = useAppContext();
 
     const room = useMemo(() => {
@@ -106,6 +107,11 @@ const RoomDetails = () => {
 
         if (!isAvailable) {
             return checkAvailability();
+        }
+
+        if (!user) {
+            toast.error("Please log in to book a room.");
+            return;
         }
 
         try {
